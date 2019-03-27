@@ -7,7 +7,9 @@ int ballsize = 20;
 int rectsize = 100;
 float diamHit;
 int keychoice; //STAY-0,UP-1,DOWN-2
-PVector ball, enemy, player;
+int reward; //reward!
+int p1=0,p2=0; //points
+PVector ball, enemy, player; //contain x,y values
 
 void setup() {
   size(800, 500);
@@ -15,34 +17,47 @@ void setup() {
   noStroke();
   ellipseMode(CENTER);
   rectMode(CENTER);
+  textSize(40);
   fill(gray);
   reset();
 }
 
 void draw() { 
   background(0);
-  
   moveEnemy();
   mouseMove();
-  movePlayer();
   Ball();
   
-  // resets things if you lose
-  if (ball.x > width) { 
+  //AI FUNCTION COMES HERE
+  
+  movePlayer();
+
+  status();
+}
+
+void status(){
+  text(p1+" : "+p2,width/2-35,50); //score board
+  if(width < ball.x){ //gameover
+    reward = -1;
+    p1++; //point++
+    reset();
+  }else if(ball.x < 0){ //win
+    reward = +1;
+    p2++; //point++
     reset();
   }
 }
 
-void Ball(){
-  ball.x = ball.x + speedX;
-  ball.y = ball.y + speedY;
+
+void Ball(){ //after bounce, speed increase slightly
+  ball.x+=speedX;
+  ball.y+=speedY;
   ellipse(ball.x, ball.y, ballsize, ballsize); //draw ball
   if (ball.x>width-40 && ball.x<width-30 && ball.y>player.y-rectsize/2-ballsize/2 && ball.y<player.y+rectsize/2+ballsize/2){// if ball hits player
     speedX = speedX * -1.02; //change dir of ball-x
     speedY = (ball.y-player.y)/5; //change angle of ball
-  }
-  else if (ball.x<40){// if ball hits enemy
-    speedX = speedX * -1.02; //change dir of ball-x & increase speed
+  } else if (ball.x>30 && ball.x<40 && ball.y>enemy.y-rectsize/2-ballsize/2 && ball.y<enemy.y+rectsize/2+ballsize/2){// if ball hits enemy
+    speedX = speedX * -1.02; //change dir of ball-x 
   }  
   if (ball.y>height-(ballsize/2) || ball.y<ballsize/2 ){// if ball hits up or down 
     speedY = speedY * -1.02; //change dir of ball-y 
